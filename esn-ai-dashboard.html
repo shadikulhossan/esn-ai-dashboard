@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESN AI Studio — Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg0:#050A14;
+  --bg1:#080F1E;
+  --bg2:#0C1528;
+  --bg3:#101C34;
+  --bg4:#162040;
+  --border0:rgba(56,120,255,0.06);
+  --border1:rgba(56,120,255,0.13);
+  --border2:rgba(56,120,255,0.28);
+  --glow-blue:rgba(56,120,255,0.18);
+  --glow-teal:rgba(0,218,180,0.14);
+  --blue:#3878FF;
+  --blue-lt:#6CA0FF;
+  --teal:#00DAB4;
+  --teal-dk:#00B494;
+  --violet:#8B5CF6;
+  --amber:#F59E0B;
+  --rose:#F43F5E;
+  --text0:#F0F6FF;
+  --text1:#A8BEDD;
+  --text2:#5A78A0;
+  --text3:#2E4466;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Syne',sans-serif;
+  --body:'DM Sans',sans-serif;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg0);color:var(--text0);font-family:var(--body);min-height:100vh;display:flex;overflow-x:hidden}
+
+/* grid bg */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(56,120,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(56,120,255,0.025) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--bg1);
+  border-right:1px solid var(--border0);
+  display:flex;flex-direction:column;
+  height:100vh;position:sticky;top:0;
+  z-index:10;
+}
+
+.brand{
+  padding:26px 22px 24px;
+  border-bottom:1px solid var(--border0);
+  display:flex;align-items:center;gap:12px;
+}
+
+.brand-mark{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--violet));
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.brand-mark::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);
+}
+.brand-mark span{font-family:var(--display);font-weight:800;font-size:12px;color:#fff;letter-spacing:-0.5px;position:relative;z-index:1;}
+
+.brand-words{flex:1;min-width:0;}
+.brand-name{font-family:var(--display);font-size:15px;font-weight:700;color:var(--text0);letter-spacing:-0.3px;}
+.brand-sub{font-size:10px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-top:1px;}
+
+.nav-section{padding:20px 14px 8px;display:flex;flex-direction:column;gap:1px;}
+.nav-group-label{font-size:9px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--text3);padding:10px 8px 6px;}
+
+.nav-link{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:8px;
+  font-size:13px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all 0.15s;text-decoration:none;
+  position:relative;
+}
+.nav-link:hover{background:var(--bg3);color:var(--text1);}
+.nav-link.active{background:rgba(56,120,255,0.12);color:var(--blue);}
+.nav-link.active::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:18px;background:var(--blue);border-radius:0 3px 3px 0;
+}
+.nav-link svg{width:15px;height:15px;flex-shrink:0;}
+
+.nav-badge{
+  margin-left:auto;background:rgba(56,120,255,0.15);color:var(--blue);
+  font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;
+  font-family:var(--mono);
+}
+
+.sidebar-mid{flex:1;overflow-y:auto;}
+
+.sidebar-bottom{padding:14px;border-top:1px solid var(--border0);}
+
+.user-tile{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  background:var(--bg2);border:1px solid var(--border0);
+  cursor:pointer;transition:border-color 0.15s;
+}
+.user-tile:hover{border-color:var(--border1);}
+
+.avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:700;font-size:13px;color:#fff;
+}
+.u-name{font-size:12px;font-weight:600;color:var(--text0);}
+.u-role{font-size:10px;color:var(--text2);}
+.u-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);margin-left:auto;flex-shrink:0;box-shadow:0 0 6px var(--teal);}
+
+/* ─── MAIN ─── */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;position:relative;z-index:1;}
+
+/* topbar */
+.topbar{
+  padding:24px 36px 20px;
+  border-bottom:1px solid var(--border0);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(5,10,20,0.7);
+  backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:5;
+}
+.topbar-left{display:flex;flex-direction:column;gap:4px;}
+.page-eyebrow{font-size:10px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--text3);}
+.page-title{font-family:var(--display);font-size:20px;font-weight:700;color:var(--text0);letter-spacing:-0.3px;}
+
+.topbar-right{display:flex;align-items:center;gap:10px;}
+
+.tb-chip{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--text1);
+  background:var(--bg2);border:1px solid var(--border0);
+  padding:7px 14px;border-radius:8px;
+  font-family:var(--mono);
+}
+.tb-chip svg{width:13px;height:13px;color:var(--text2);}
+
+.search-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--border0);
+  padding:7px 14px;border-radius:8px;
+  font-size:12px;color:var(--text2);
+  transition:border-color 0.15s;cursor:text;
+  min-width:180px;
+}
+.search-bar:hover{border-color:var(--border1);}
+.search-bar svg{width:13px;height:13px;flex-shrink:0;}
+.search-bar span{color:var(--text3);}
+.search-kbd{
+  margin-left:auto;font-family:var(--mono);font-size:10px;
+  background:var(--bg3);border:1px solid var(--border1);
+  padding:2px 6px;border-radius:4px;color:var(--text3);
+}
+
+.notif-btn{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border0);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;transition:border-color 0.15s;
+}
+.notif-btn:hover{border-color:var(--border1);}
+.notif-btn svg{width:15px;height:15px;color:var(--text1);}
+.notif-pip{
+  position:absolute;top:7px;right:7px;
+  width:7px;height:7px;border-radius:50%;background:var(--rose);
+  border:1.5px solid var(--bg0);
+}
+
+.btn-cta{
+  display:flex;align-items:center;gap:7px;
+  background:var(--blue);color:#fff;
+  font-size:12px;font-weight:600;font-family:var(--body);
+  padding:8px 16px;border-radius:8px;border:none;cursor:pointer;
+  transition:opacity 0.15s,box-shadow 0.15s;
+  box-shadow:0 0 20px rgba(56,120,255,0.3);
+}
+.btn-cta:hover{opacity:0.9;box-shadow:0 0 28px rgba(56,120,255,0.5);}
+.btn-cta svg{width:13px;height:13px;}
+
+/* ─── CONTENT ─── */
+.content{padding:28px 36px;display:flex;flex-direction:column;gap:24px;}
+
+/* ─── METRICS STRIP ─── */
+.metrics-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+
+.metric{
+  background:var(--bg1);
+  border:1px solid var(--border0);
+  border-radius:14px;
+  padding:20px 20px 16px;
+  position:relative;overflow:hidden;
+  transition:border-color 0.2s,transform 0.2s;
+  cursor:default;
+}
+.metric:hover{border-color:var(--border1);transform:translateY(-2px);}
+
+.metric-glow{
+  position:absolute;top:-40px;right:-20px;
+  width:120px;height:120px;border-radius:50%;
+  opacity:0.6;pointer-events:none;
+}
+.mg-blue{background:radial-gradient(circle,rgba(56,120,255,0.2),transparent 70%);}
+.mg-teal{background:radial-gradient(circle,rgba(0,218,180,0.18),transparent 70%);}
+.mg-violet{background:radial-gradient(circle,rgba(139,92,246,0.18),transparent 70%);}
+.mg-amber{background:radial-gradient(circle,rgba(245,158,11,0.18),transparent 70%);}
+
+.metric-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.metric-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.9px;color:var(--text2);}
+
+.metric-icon{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.mi-blue{background:rgba(56,120,255,0.12);}
+.mi-teal{background:rgba(0,218,180,0.10);}
+.mi-violet{background:rgba(139,92,246,0.12);}
+.mi-amber{background:rgba(245,158,11,0.10);}
+.metric-icon svg{width:16px;height:16px;}
+
+.metric-value{
+  font-family:var(--display);font-size:34px;font-weight:700;
+  color:var(--text0);line-height:1;letter-spacing:-1px;
+  margin-bottom:8px;
+}
+.metric-value sup{font-size:18px;letter-spacing:0;}
+
+.metric-footer{display:flex;align-items:center;gap:8px;}
+.delta{font-size:12px;font-weight:600;display:flex;align-items:center;gap:3px;}
+.delta svg{width:11px;height:11px;}
+.delta.up{color:var(--teal);}
+.delta.dn{color:var(--rose);}
+.metric-period{font-size:11px;color:var(--text3);}
+
+.metric-bar{
+  height:3px;border-radius:3px;background:var(--bg3);
+  margin-top:14px;overflow:hidden;
+}
+.metric-bar-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+
+/* ─── MIDROW ─── */
+.midrow{display:grid;grid-template-columns:1fr 320px;gap:14px;}
+
+/* Panel */
+.panel{
+  background:var(--bg1);
+  border:1px solid var(--border0);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 22px 0;
+}
+.panel-title{font-family:var(--display);font-size:14px;font-weight:700;color:var(--text0);}
+.panel-desc{font-size:11px;color:var(--text3);margin-top:2px;}
+.panel-body{padding:18px 22px 22px;}
+
+.tabs{display:flex;gap:2px;background:var(--bg2);border-radius:7px;padding:3px;}
+.tab{
+  font-size:11px;font-weight:500;color:var(--text2);
+  padding:5px 12px;border-radius:5px;cursor:pointer;
+  transition:all 0.12s;
+}
+.tab:hover{color:var(--text1);}
+.tab.on{background:var(--bg3);color:var(--text0);}
+
+/* Revenue chart */
+.chart-area{position:relative;height:180px;margin-top:4px;}
+
+.chart-svg{width:100%;height:100%;overflow:visible;}
+
+.chart-grid-line{stroke:var(--border0);stroke-width:1;}
+.chart-label-y{font-family:var(--mono);font-size:9px;fill:var(--text3);}
+.chart-label-x{font-family:var(--mono);font-size:9px;fill:var(--text3);}
+.chart-line-path{fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.chart-line-path2{fill:none;stroke:var(--teal);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:0.6;}
+.chart-area-fill{fill:url(#blueGrad);opacity:0.25;}
+.chart-dot{fill:var(--blue);stroke:var(--bg0);stroke-width:2.5;}
+.chart-dot2{fill:var(--teal);stroke:var(--bg0);stroke-width:2.5;}
+
+.chart-legend{display:flex;align-items:center;gap:16px;margin-top:14px;}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);}
+.cl-line{width:16px;height:2.5px;border-radius:2px;}
+
+/* Tooltip */
+.chart-tooltip{
+  position:absolute;background:var(--bg2);border:1px solid var(--border1);
+  border-radius:8px;padding:8px 12px;pointer-events:none;opacity:0;
+  transition:opacity 0.12s;font-size:11px;color:var(--text1);
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);min-width:100px;
+}
+.ct-month{font-weight:600;color:var(--text0);margin-bottom:4px;}
+.ct-row{display:flex;justify-content:space-between;gap:16px;}
+.ct-val{font-family:var(--mono);color:var(--blue-lt);}
+.ct-val2{font-family:var(--mono);color:var(--teal);}
+
+/* ─── Donut ─── */
+.donut-section{padding:14px 22px 20px;}
+.donut-ring{display:flex;align-items:center;justify-content:center;margin:8px 0 18px;position:relative;}
+.donut-ring svg{transform:rotate(-90deg);}
+.donut-center{
+  position:absolute;display:flex;flex-direction:column;align-items:center;
+}
+.dc-num{font-family:var(--display);font-size:28px;font-weight:700;color:var(--text0);line-height:1;}
+.dc-lbl{font-size:10px;color:var(--text3);margin-top:2px;}
+
+.legend-grid{display:flex;flex-direction:column;gap:8px;}
+.lg-item{display:flex;align-items:center;gap:9px;}
+.lg-swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.lg-name{font-size:12px;color:var(--text1);flex:1;}
+.lg-bar-wrap{width:60px;height:4px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.lg-bar-fill{height:100%;border-radius:4px;}
+.lg-pct{font-family:var(--mono);font-size:11px;color:var(--text0);font-weight:500;min-width:28px;text-align:right;}
+
+/* ─── BOTTOMROW ─── */
+.bottomrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* Projects */
+.proj-list{display:flex;flex-direction:column;gap:10px;}
+.proj-card{
+  background:var(--bg2);border:1px solid var(--border0);border-radius:10px;
+  padding:12px 14px;transition:border-color 0.15s,background 0.15s;cursor:pointer;
+}
+.proj-card:hover{border-color:var(--border1);background:var(--bg3);}
+.proj-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.proj-name{font-size:13px;font-weight:600;color:var(--text0);}
+.proj-client{font-size:10px;color:var(--text3);margin-top:1px;}
+.proj-prog-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.prog-title{font-size:10px;color:var(--text2);}
+.prog-pct{font-family:var(--mono);font-size:10px;font-weight:500;}
+.prog-track{height:4px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width 1.2s ease;}
+
+/* Clients table */
+.ct-table{width:100%;border-collapse:collapse;}
+.ct-table thead th{
+  font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.9px;
+  color:var(--text3);padding:0 0 10px;text-align:left;
+  border-bottom:1px solid var(--border0);
+}
+.ct-table tbody tr{border-bottom:1px solid var(--border0);transition:background 0.1s;cursor:pointer;}
+.ct-table tbody tr:last-child{border-bottom:none;}
+.ct-table tbody tr:hover{background:rgba(56,120,255,0.04);}
+.ct-table td{padding:11px 0;font-size:12px;color:var(--text1);vertical-align:middle;}
+.td-name{font-weight:600;color:var(--text0);}
+.td-geo{font-size:10px;color:var(--text3);margin-top:1px;}
+.td-val{font-family:var(--mono);font-size:11px;color:var(--text0);}
+
+.pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;
+}
+.pill-dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.p-active{background:rgba(0,218,180,0.10);color:var(--teal);}
+.p-pending{background:rgba(245,158,11,0.10);color:var(--amber);}
+.p-review{background:rgba(56,120,255,0.10);color:var(--blue);}
+.p-done{background:rgba(139,92,246,0.10);color:var(--violet);}
+
+/* Feed */
+.feed-list{display:flex;flex-direction:column;}
+.feed-item{
+  display:flex;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--border0);
+  transition:background 0.1s;cursor:pointer;
+}
+.feed-item:last-child{border-bottom:none;}
+.feed-item:hover{background:rgba(56,120,255,0.03);}
+.fi-icon{
+  width:30px;height:30px;border-radius:7px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.fi-icon svg{width:13px;height:13px;}
+.fi-b{background:rgba(56,120,255,0.12);color:var(--blue);}
+.fi-t{background:rgba(0,218,180,0.10);color:var(--teal);}
+.fi-v{background:rgba(139,92,246,0.12);color:var(--violet);}
+.fi-a{background:rgba(245,158,11,0.10);color:var(--amber);}
+.fi-r{background:rgba(244,63,94,0.10);color:var(--rose);}
+.feed-title{font-size:12px;font-weight:500;color:var(--text0);}
+.feed-meta{font-size:10px;color:var(--text3);margin-top:2px;}
+.feed-amount{font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:3px;}
+
+/* ─── FOOTER STRIP ─── */
+.footer-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  padding:0 36px 28px;
+}
+.mini-panel{
+  background:var(--bg1);border:1px solid var(--border0);border-radius:12px;
+  padding:16px 18px;display:flex;align-items:center;gap:14px;
+  transition:border-color 0.15s;cursor:pointer;
+}
+.mini-panel:hover{border-color:var(--border1);}
+.mini-icon{
+  width:38px;height:38px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.mini-icon svg{width:17px;height:17px;}
+.mini-val{font-family:var(--display);font-size:22px;font-weight:700;color:var(--text0);}
+.mini-lbl{font-size:11px;color:var(--text2);margin-top:1px;}
+.mini-badge{
+  margin-left:auto;font-size:10px;font-weight:600;
+  padding:3px 8px;border-radius:6px;font-family:var(--mono);
+}
+.mb-g{background:rgba(0,218,180,0.10);color:var(--teal);}
+.mb-a{background:rgba(245,158,11,0.10);color:var(--amber);}
+.mb-r{background:rgba(244,63,94,0.10);color:var(--rose);}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border1);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:var(--border2);}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.metric{animation:fadeUp 0.4s ease both;}
+.metric:nth-child(1){animation-delay:0.05s}
+.metric:nth-child(2){animation-delay:0.10s}
+.metric:nth-child(3){animation-delay:0.15s}
+.metric:nth-child(4){animation-delay:0.20s}
+
+@media(max-width:1180px){
+  .metrics-strip{grid-template-columns:repeat(2,1fr);}
+  .midrow,.bottomrow{grid-template-columns:1fr;}
+  .footer-strip{grid-template-columns:1fr 1fr;}
+  .content{padding:20px;}
+  .footer-strip{padding:0 20px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark"><span>ESN</span></div>
+    <div class="brand-words">
+      <div class="brand-name">ESN AI Studio</div>
+      <div class="brand-sub">Command Center</div>
+    </div>
+  </div>
+
+  <div class="sidebar-mid">
+    <div class="nav-section">
+      <div class="nav-group-label">Workspace</div>
+      <a class="nav-link active" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Overview
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Projects
+        <span class="nav-badge">12</span>
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clients
+        <span class="nav-badge">34</span>
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.19 12 19.79 19.79 0 0 1 1.1 3.39 2 2 0 0 1 3.07 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16v.92z"/></svg>
+        Sales Pipeline
+        <span class="nav-badge">9</span>
+      </a>
+
+      <div class="nav-group-label">Finance</div>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+        Revenue
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        Payments
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Invoices
+      </a>
+
+      <div class="nav-group-label">Operations</div>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+        Team
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Sprints
+      </a>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Abroad Partners
+      </a>
+
+      <div class="nav-group-label">System</div>
+      <a class="nav-link" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 4.93 19.07M4.93 4.93A10 10 0 0 1 19.07 19.07"/></svg>
+        Settings
+      </a>
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-tile">
+      <div class="avatar">S</div>
+      <div>
+        <div class="u-name">Shadikul Islam</div>
+        <div class="u-role">Founder & CEO</div>
+      </div>
+      <div class="u-dot"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-eyebrow">ESN AI Private Limited · FY 2025–26</div>
+      <div class="page-title">Business Overview</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Search anything…</span>
+        <span class="search-kbd">⌘K</span>
+      </div>
+      <div class="tb-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        June 2026
+      </div>
+      <div class="notif-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-pip"></div>
+      </div>
+      <button class="btn-cta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Generate Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ── METRICS STRIP ── -->
+    <div class="metrics-strip">
+
+      <div class="metric">
+        <div class="metric-glow mg-blue"></div>
+        <div class="metric-top">
+          <div class="metric-label">Total Revenue</div>
+          <div class="metric-icon mi-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3878FF" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+          </div>
+        </div>
+        <div class="metric-value"><sup>$</sup>48.2K</div>
+        <div class="metric-footer">
+          <div class="delta up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            18.4%
+          </div>
+          <div class="metric-period">vs Q1 2026</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:72%;background:linear-gradient(90deg,var(--blue),var(--blue-lt))"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-glow mg-teal"></div>
+        <div class="metric-top">
+          <div class="metric-label">Active Clients</div>
+          <div class="metric-icon mi-teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00DAB4" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+        </div>
+        <div class="metric-value">34</div>
+        <div class="metric-footer">
+          <div class="delta up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            +6 new
+          </div>
+          <div class="metric-period">this month</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:68%;background:linear-gradient(90deg,var(--teal),var(--teal-dk))"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-glow mg-violet"></div>
+        <div class="metric-top">
+          <div class="metric-label">Active Projects</div>
+          <div class="metric-icon mi-violet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+        </div>
+        <div class="metric-value">12</div>
+        <div class="metric-footer">
+          <div class="delta dn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            −2
+          </div>
+          <div class="metric-period">completed this week</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:55%;background:linear-gradient(90deg,var(--violet),#A07BFF)"></div></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-glow mg-amber"></div>
+        <div class="metric-top">
+          <div class="metric-label">Pipeline Value</div>
+          <div class="metric-icon mi-amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M3 3h18M3 12h18M3 21h18"/><circle cx="6" cy="7" r="1.5" fill="#F59E0B"/><circle cx="12" cy="16" r="1.5" fill="#F59E0B"/><circle cx="18" cy="11" r="1.5" fill="#F59E0B"/></svg>
+          </div>
+        </div>
+        <div class="metric-value"><sup>$</sup>22.7K</div>
+        <div class="metric-footer">
+          <div class="delta up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            9 leads
+          </div>
+          <div class="metric-period">in progress</div>
+        </div>
+        <div class="metric-bar"><div class="metric-bar-fill" style="width:44%;background:linear-gradient(90deg,var(--amber),#FFCC55)"></div></div>
+      </div>
+
+    </div>
+
+    <!-- ── MID ROW ── -->
+    <div class="midrow">
+
+      <!-- Revenue Chart -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Revenue Trend</div>
+            <div class="panel-desc">Monthly income · USD</div>
+          </div>
+          <div class="tabs">
+            <div class="tab on">6M</div>
+            <div class="tab">1Y</div>
+            <div class="tab">All</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-area" id="chartArea">
+            <div class="chart-tooltip" id="tooltip">
+              <div class="ct-month" id="tt-month"></div>
+              <div class="ct-row"><span>Revenue</span><span class="ct-val" id="tt-rev"></span></div>
+              <div class="ct-row"><span>Target</span><span class="ct-val2" id="tt-tgt"></span></div>
+            </div>
+            <svg class="chart-svg" id="chartSvg" viewBox="0 0 600 180" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#3878FF" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#3878FF" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#00DAB4" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#00DAB4" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Grid lines -->
+              <line class="chart-grid-line" x1="50" y1="20" x2="580" y2="20"/>
+              <line class="chart-grid-line" x1="50" y1="60" x2="580" y2="60"/>
+              <line class="chart-grid-line" x1="50" y1="100" x2="580" y2="100"/>
+              <line class="chart-grid-line" x1="50" y1="140" x2="580" y2="140"/>
+              <!-- Y labels -->
+              <text class="chart-label-y" x="44" y="23" text-anchor="end">$14k</text>
+              <text class="chart-label-y" x="44" y="63" text-anchor="end">$10k</text>
+              <text class="chart-label-y" x="44" y="103" text-anchor="end">$6k</text>
+              <text class="chart-label-y" x="44" y="143" text-anchor="end">$2k</text>
+              <!-- X labels -->
+              <text class="chart-label-x" x="96"  y="165" text-anchor="middle">Jan</text>
+              <text class="chart-label-x" x="188" y="165" text-anchor="middle">Feb</text>
+              <text class="chart-label-x" x="280" y="165" text-anchor="middle">Mar</text>
+              <text class="chart-label-x" x="372" y="165" text-anchor="middle">Apr</text>
+              <text class="chart-label-x" x="464" y="165" text-anchor="middle">May</text>
+              <text class="chart-label-x" x="556" y="165" text-anchor="middle">Jun</text>
+
+              <!-- Area fill (revenue) -->
+              <path class="chart-area-fill" d="M96,110 L188,82 L280,96 L372,50 L464,22 L556,60 L556,155 L464,155 L372,155 L280,155 L188,155 L96,155 Z"/>
+              <!-- Revenue line -->
+              <path class="chart-line-path" d="M96,110 L188,82 L280,96 L372,50 L464,22 L556,60"/>
+              <!-- Target line (dashed) -->
+              <path class="chart-line-path2" stroke-dasharray="5,4" d="M96,120 L188,100 L280,88 L372,70 L464,55 L556,45"/>
+
+              <!-- Revenue dots -->
+              <circle class="chart-dot" cx="96"  cy="110" r="4" data-month="January"  data-rev="$5,800" data-tgt="$5,200"/>
+              <circle class="chart-dot" cx="188" cy="82"  r="4" data-month="February" data-rev="$7,200" data-tgt="$6,800"/>
+              <circle class="chart-dot" cx="280" cy="96"  r="4" data-month="March"    data-rev="$6,400" data-tgt="$7,500"/>
+              <circle class="chart-dot" cx="372" cy="50"  r="4" data-month="April"    data-rev="$9,100" data-tgt="$8,000"/>
+              <circle class="chart-dot" cx="464" cy="22"  r="4" data-month="May"      data-rev="$11,300" data-tgt="$9,500"/>
+              <circle class="chart-dot" cx="556" cy="60"  r="4" data-month="June"     data-rev="$8,400" data-tgt="$9,000"/>
+            </svg>
+          </div>
+          <div class="chart-legend">
+            <div class="cl-item"><div class="cl-line" style="background:var(--blue)"></div> Actual Revenue</div>
+            <div class="cl-item"><div class="cl-line" style="background:var(--teal);opacity:0.6"></div> Target</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Regions Donut -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Clients by Region</div>
+            <div class="panel-desc">34 total accounts</div>
+          </div>
+        </div>
+        <div class="donut-section">
+          <div class="donut-ring">
+            <svg width="144" height="144" viewBox="0 0 144 144">
+              <!-- r=54, circumference=339.3 -->
+              <!-- BD 38% = 128.9 -->
+              <circle cx="72" cy="72" r="54" fill="none" stroke="var(--bg3)" stroke-width="16"/>
+              <circle cx="72" cy="72" r="54" fill="none" stroke="#3878FF" stroke-width="16"
+                stroke-dasharray="128.9 339.3" stroke-dashoffset="0" stroke-linecap="round"/>
+              <!-- US 27% = 91.6 -->
+              <circle cx="72" cy="72" r="54" fill="none" stroke="#00DAB4" stroke-width="16"
+                stroke-dasharray="91.6 339.3" stroke-dashoffset="-132" stroke-linecap="round"/>
+              <!-- UK 18% = 61.1 -->
+              <circle cx="72" cy="72" r="54" fill="none" stroke="#8B5CF6" stroke-width="16"
+                stroke-dasharray="61.1 339.3" stroke-dashoffset="-226" stroke-linecap="round"/>
+              <!-- EU 11% = 37.3 -->
+              <circle cx="72" cy="72" r="54" fill="none" stroke="#F59E0B" stroke-width="16"
+                stroke-dasharray="37.3 339.3" stroke-dashoffset="-289" stroke-linecap="round"/>
+              <!-- AU 6% = 20.4 -->
+              <circle cx="72" cy="72" r="54" fill="none" stroke="#F43F5E" stroke-width="16"
+                stroke-dasharray="20.4 339.3" stroke-dashoffset="-328" stroke-linecap="round"/>
+            </svg>
+            <div class="donut-center">
+              <div class="dc-num">34</div>
+              <div class="dc-lbl">clients</div>
+            </div>
+          </div>
+          <div class="legend-grid">
+            <div class="lg-item">
+              <div class="lg-swatch" style="background:#3878FF"></div>
+              <div class="lg-name">Bangladesh</div>
+              <div class="lg-bar-wrap"><div class="lg-bar-fill" style="width:38%;background:#3878FF"></div></div>
+              <div class="lg-pct">38%</div>
+            </div>
+            <div class="lg-item">
+              <div class="lg-swatch" style="background:#00DAB4"></div>
+              <div class="lg-name">USA</div>
+              <div class="lg-bar-wrap"><div class="lg-bar-fill" style="width:27%;background:#00DAB4"></div></div>
+              <div class="lg-pct">27%</div>
+            </div>
+            <div class="lg-item">
+              <div class="lg-swatch" style="background:#8B5CF6"></div>
+              <div class="lg-name">UK</div>
+              <div class="lg-bar-wrap"><div class="lg-bar-fill" style="width:18%;background:#8B5CF6"></div></div>
+              <div class="lg-pct">18%</div>
+            </div>
+            <div class="lg-item">
+              <div class="lg-swatch" style="background:#F59E0B"></div>
+              <div class="lg-name">Europe</div>
+              <div class="lg-bar-wrap"><div class="lg-bar-fill" style="width:11%;background:#F59E0B"></div></div>
+              <div class="lg-pct">11%</div>
+            </div>
+            <div class="lg-item">
+              <div class="lg-swatch" style="background:#F43F5E"></div>
+              <div class="lg-name">Australia</div>
+              <div class="lg-bar-wrap"><div class="lg-bar-fill" style="width:6%;background:#F43F5E"></div></div>
+              <div class="lg-pct">6%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── BOTTOM ROW ── -->
+    <div class="bottomrow">
+
+      <!-- Active Projects -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Active Projects</div>
+            <div class="panel-desc">Sprint progress</div>
+          </div>
+          <div style="font-size:11px;color:var(--blue);cursor:pointer;padding-top:18px;">See all →</div>
+        </div>
+        <div class="panel-body">
+          <div class="proj-list">
+
+            <div class="proj-card">
+              <div class="proj-top">
+                <div>
+                  <div class="proj-name">AI Chatbot Platform</div>
+                  <div class="proj-client">NovaTech Ltd · USA</div>
+                </div>
+                <span class="pill p-active"><span class="pill-dot"></span>Active</span>
+              </div>
+              <div class="proj-prog-label">
+                <span class="prog-title">Sprint 9 / 12</span>
+                <span class="prog-pct" style="color:var(--teal)">75%</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" style="width:75%;background:linear-gradient(90deg,var(--teal),var(--blue))"></div></div>
+            </div>
+
+            <div class="proj-card">
+              <div class="proj-top">
+                <div>
+                  <div class="proj-name">CRM Automation Suite</div>
+                  <div class="proj-client">EuroSoft GmbH · Germany</div>
+                </div>
+                <span class="pill p-review"><span class="pill-dot"></span>Review</span>
+              </div>
+              <div class="proj-prog-label">
+                <span class="prog-title">Sprint 11 / 12</span>
+                <span class="prog-pct" style="color:var(--blue)">91%</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" style="width:91%;background:linear-gradient(90deg,var(--blue),var(--violet))"></div></div>
+            </div>
+
+            <div class="proj-card">
+              <div class="proj-top">
+                <div>
+                  <div class="proj-name">Lead Gen Engine</div>
+                  <div class="proj-client">Adex Solutions · Australia</div>
+                </div>
+                <span class="pill p-pending"><span class="pill-dot"></span>Pending</span>
+              </div>
+              <div class="proj-prog-label">
+                <span class="prog-title">Sprint 3 / 10</span>
+                <span class="prog-pct" style="color:var(--amber)">30%</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" style="width:30%;background:linear-gradient(90deg,var(--amber),#FFCC55)"></div></div>
+            </div>
+
+            <div class="proj-card">
+              <div class="proj-top">
+                <div>
+                  <div class="proj-name">WhatsApp Bot — BD</div>
+                  <div class="proj-client">StartupBase BD · Dhaka</div>
+                </div>
+                <span class="pill p-active"><span class="pill-dot"></span>Active</span>
+              </div>
+              <div class="proj-prog-label">
+                <span class="prog-title">Sprint 6 / 8</span>
+                <span class="prog-pct" style="color:var(--teal)">62%</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" style="width:62%;background:linear-gradient(90deg,var(--teal),var(--teal-dk))"></div></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Clients Table -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Recent Clients</div>
+            <div class="panel-desc">Latest accounts</div>
+          </div>
+          <div style="font-size:11px;color:var(--blue);cursor:pointer;padding-top:18px;">View all →</div>
+        </div>
+        <div class="panel-body">
+          <table class="ct-table">
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Service</th>
+                <th>Value</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="td-name">NovaTech Ltd</div>
+                  <div class="td-geo">🇺🇸 USA</div>
+                </td>
+                <td>AI Automation</td>
+                <td><span class="td-val">$4,800</span></td>
+                <td><span class="pill p-active"><span class="pill-dot"></span>Active</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="td-name">StartupBase BD</div>
+                  <div class="td-geo">🇧🇩 Dhaka</div>
+                </td>
+                <td>Chatbot Dev</td>
+                <td><span class="td-val">$1,200</span></td>
+                <td><span class="pill p-active"><span class="pill-dot"></span>Active</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="td-name">Verity Group</div>
+                  <div class="td-geo">🇬🇧 UK</div>
+                </td>
+                <td>Business Suite</td>
+                <td><span class="td-val">$6,500</span></td>
+                <td><span class="pill p-review"><span class="pill-dot"></span>Review</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="td-name">Adex Solutions</div>
+                  <div class="td-geo">🇦🇺 Australia</div>
+                </td>
+                <td>Lead Gen AI</td>
+                <td><span class="td-val">$3,100</span></td>
+                <td><span class="pill p-pending"><span class="pill-dot"></span>Pending</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="td-name">EuroSoft GmbH</div>
+                  <div class="td-geo">🇩🇪 Germany</div>
+                </td>
+                <td>CRM Automation</td>
+                <td><span class="td-val">$5,200</span></td>
+                <td><span class="pill p-done"><span class="pill-dot"></span>Done</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Activity Feed</div>
+            <div class="panel-desc">Live team updates</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="feed-list">
+
+            <div class="feed-item">
+              <div class="fi-icon fi-t">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div>
+                <div class="feed-title">Invoice #INV-047 paid</div>
+                <div class="feed-meta">NovaTech Ltd · 2 hours ago</div>
+                <div class="feed-amount">+$4,800</div>
+              </div>
+            </div>
+
+            <div class="feed-item">
+              <div class="fi-icon fi-b">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="feed-title">New client onboarded</div>
+                <div class="feed-meta">StartupBase BD · Chatbot plan · 5h ago</div>
+              </div>
+            </div>
+
+            <div class="feed-item">
+              <div class="fi-icon fi-v">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div>
+                <div class="feed-title">Sprint #08 completed</div>
+                <div class="feed-meta">Naim · AI Automation module · Yesterday</div>
+              </div>
+            </div>
+
+            <div class="feed-item">
+              <div class="fi-icon fi-a">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div>
+                <div class="feed-title">Proposal sent</div>
+                <div class="feed-meta">EuroSoft GmbH · CRM Automation · 2d ago</div>
+              </div>
+            </div>
+
+            <div class="feed-item">
+              <div class="fi-icon fi-r">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div>
+                <div class="feed-title">Follow-up needed</div>
+                <div class="feed-meta">Adex Solutions — quote pending · 3d ago</div>
+              </div>
+            </div>
+
+            <div class="feed-item">
+              <div class="fi-icon fi-b">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <div class="feed-title">Sprint #09 kicked off</div>
+                <div class="feed-meta">NovaTech AI Chatbot · 4d ago</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ── FOOTER STRIP ── -->
+  <div class="footer-strip">
+
+    <div class="mini-panel">
+      <div class="mini-icon" style="background:rgba(56,120,255,0.10)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3878FF" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+      </div>
+      <div>
+        <div class="mini-val">7</div>
+        <div class="mini-lbl">Team Members</div>
+      </div>
+      <div class="mini-badge mb-g">+1 this month</div>
+    </div>
+
+    <div class="mini-panel">
+      <div class="mini-icon" style="background:rgba(245,158,11,0.10)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div>
+        <div class="mini-val">5</div>
+        <div class="mini-lbl">Pending Invoices</div>
+      </div>
+      <div class="mini-badge mb-a">$12,400</div>
+    </div>
+
+    <div class="mini-panel">
+      <div class="mini-icon" style="background:rgba(244,63,94,0.10)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.19 12 19.79 19.79 0 0 1 1.1 3.39 2 2 0 0 1 3.07 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16v.92z"/></svg>
+      </div>
+      <div>
+        <div class="mini-val">3</div>
+        <div class="mini-lbl">Follow-ups Due</div>
+      </div>
+      <div class="mini-badge mb-r">Overdue</div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+// Nav interaction
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+  });
+});
+
+// Tab interaction
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    tab.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    tab.classList.add('on');
+  });
+});
+
+// Chart tooltip
+const tooltip = document.getElementById('tooltip');
+const chartArea = document.getElementById('chartArea');
+const ttMonth = document.getElementById('tt-month');
+const ttRev = document.getElementById('tt-rev');
+const ttTgt = document.getElementById('tt-tgt');
+
+document.querySelectorAll('.chart-dot').forEach(dot => {
+  dot.addEventListener('mouseenter', e => {
+    ttMonth.textContent = dot.dataset.month;
+    ttRev.textContent = dot.dataset.rev;
+    ttTgt.textContent = dot.dataset.tgt;
+    const rect = chartArea.getBoundingClientRect();
+    const dotRect = dot.getBoundingClientRect();
+    let x = dotRect.left - rect.left + 8;
+    let y = dotRect.top  - rect.top  - 72;
+    if (x + 120 > rect.width) x = x - 120;
+    if (y < 0) y = dotRect.top - rect.top + 12;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top  = y + 'px';
+    tooltip.style.opacity = '1';
+    dot.setAttribute('r', '6');
+  });
+  dot.addEventListener('mouseleave', () => {
+    tooltip.style.opacity = '0';
+    dot.setAttribute('r', '4');
+  });
+});
+
+// Animate metric bars on load
+document.querySelectorAll('.metric-bar-fill').forEach(bar => {
+  const w = bar.style.width;
+  bar.style.width = '0';
+  setTimeout(() => { bar.style.width = w; }, 200);
+});
+
+// Animate project progress bars
+document.querySelectorAll('.prog-fill').forEach(fill => {
+  const w = fill.style.width;
+  fill.style.width = '0';
+  setTimeout(() => { fill.style.width = w; }, 400);
+});
+
+// Animate legend bars
+document.querySelectorAll('.lg-bar-fill').forEach(fill => {
+  const w = fill.style.width;
+  fill.style.width = '0';
+  setTimeout(() => { fill.style.width = w; }, 300);
+});
+</script>
+</body>
+</html>
